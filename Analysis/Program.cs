@@ -1,17 +1,13 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Analysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-String programText ="Console.WriteLine(\"Hello, World!\");";
+String programText ="class Hello { Console.WriteLine(\"Hello, World!\"); } ";
 
 SyntaxTree tree = CSharpSyntaxTree.ParseText(programText);
 var root = (CompilationUnitSyntax)tree.GetRoot();
 
-foreach (var member in root.Members)
-{
-    Console.WriteLine(member.Modifiers);
-    foreach (var attribute in member.AttributeLists)
-    {
-           
-    }
-}
+var structCollector = new SharpingClassVisitor(new Domain());
+structCollector.Visit(root);
+Console.Write(structCollector.domain);
