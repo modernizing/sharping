@@ -3,11 +3,17 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-String programText ="class Hello { Console.WriteLine(\"Hello, World!\"); } ";
+SharpingClassVisitor analysis(string code)
+{
+    SyntaxTree tree = CSharpSyntaxTree.ParseText(code);
+    var root = (CompilationUnitSyntax) tree.GetRoot();
 
-SyntaxTree tree = CSharpSyntaxTree.ParseText(programText);
-var root = (CompilationUnitSyntax)tree.GetRoot();
+    var sharpingClassVisitor = new SharpingClassVisitor(new Domain());
+    sharpingClassVisitor.Visit(root);
+    return sharpingClassVisitor;
+}
 
-var structCollector = new SharpingClassVisitor(new Domain());
-structCollector.Visit(root);
+String programText = "var inmemorylist = db.Fetch<article>(\"SELECT * FROM Articles\")";
+
+var structCollector = analysis(programText);
 Console.Write(structCollector.domain);
